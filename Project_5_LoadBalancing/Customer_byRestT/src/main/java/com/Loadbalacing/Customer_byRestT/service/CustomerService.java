@@ -40,7 +40,7 @@ public class CustomerService {
 
 
         //Choosing instance from the register
-        ServiceInstance serviceInstance = loadBalancerClient.choose("Address_byRestT");
+        ServiceInstance serviceInstance = loadBalancerClient.choose("address");
         String uri = serviceInstance.getUri().toString();
         log.info("The instance :"+uri);       //each time takes a differnt address instance in robin round manner.
 
@@ -48,7 +48,7 @@ public class CustomerService {
         //calling the instance from chosen above
         //try running multiple instances of address services one by one and check the load balance -> robinround
         AddressResponse addressResponse = restTemplate
-                .getForObject(uri+"/get/"+id, AddressResponse.class);
+                .getForObject(uri+"/api/address/get/"+id, AddressResponse.class);
 
         customerResponse.setAddressResponse(addressResponse);
         return customerResponse;
