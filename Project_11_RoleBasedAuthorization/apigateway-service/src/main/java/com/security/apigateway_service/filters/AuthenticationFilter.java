@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
@@ -39,15 +41,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     try {
                         jwtUtil.validateToken(token);
                         Claims claims = jwtUtil.getClaims(token);
-
                         String username = claims.getSubject();
-                        String roles = claims.get("roles").toString(); // comma separated
-                        System.out.println(roles);
 
-                        // Add as headers
+                        List<String> roles = claims.get("roles", List.class);
+                        String roleHeader = String.join(",", roles);
+
                         ServerHttpRequest request = exchange.getRequest().mutate()
                                 .header("X-User", username)
-                                .header("X-Roles", roles)
+                                .header("X-Roles", roleHeader)
                                 .build();
 
                         return chain.filter(exchange.mutate().request(request).build());
